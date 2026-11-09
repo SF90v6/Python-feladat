@@ -1,0 +1,60 @@
+import pandas as pd
+
+# Fájl beolvasása
+adatok = pd.read_csv("Automobile_data.txt")
+
+# A szükséges oszlopok átalakítása számmá
+for i in ["engine-size", "price", "horsepower",
+            "curb-weight", "city-mpg", "highway-mpg"]:
+    adatok[i] = pd.to_numeric(adatok[i], errors="coerce")
+
+
+# 1. feladat: Az autógyártók (make) és a motorok átlagos mérete (engine-size), a motorok átlagos mérete (engine-size) alapján csökkenő sorrendbe rendezve.
+
+eredmeny = adatok.groupby("make")["engine-size"].mean()
+eredmeny1 = eredmeny.sort_values(ascending=False)
+print("Az autógyártók (make) és a motorok átlagos mérete (engine-size), a motorok átlagos mérete (engine-size) alapján csökkenő sorrendbe rendezve:")
+print(eredmeny1)
+
+
+# 2. feladat: A dízel (fuel-type: diesel), elsőkerekes (drive-wheels: fwd) autók az ár szerint növekvő sorrendben. 
+
+eredmeny2 = adatok[
+    (adatok["fuel-type"] == "diesel") &
+    (adatok["drive-wheels"] == "fwd")
+]
+
+eredmeny3 = eredmeny2.sort_values("price")
+print("A dízel (fuel-type: diesel), elsőkerekes (drive-wheels: fwd) autók az ár szerint növekvő sorrendben: ")
+print(eredmeny3[["make", "price"]])
+
+
+# 3. feladat:  A három legjobb lóerő-súly (horsepower/curb-weight) arányú autó, és a lóerő-súly arány értéke.
+
+adatok["arany"] = adatok["horsepower"] / adatok["curb-weight"]
+
+eredmeny4 = adatok.sort_values("arany", ascending=False).head(3)
+print("A három legjobb lóerő-súly (horsepower/curb-weight) arányú autó, és a lóerő-súly arány értéke:")
+print(eredmeny4[["make", "arany"]])
+    
+
+# 4. feladat: Az öt legnagyobb átlagos üzemanyagfogyasztású (city-mpg és highway-mpg átlaga) autó az átlagos üzemanyagfogyasztás (city-mpg és highway-mpg átlaga) alapján növekvő sorrendben.
+
+
+adatok["atlag_mpg"] = (adatok["city-mpg"] + adatok["highway-mpg"]) / 2
+
+eredmeny5 = adatok.sort_values("atlag_mpg").head(5)
+print("Az öt legnagyobb átlagos üzemanyagfogyasztású (city-mpg és highway-mpg átlaga) autó az átlagos üzemanyagfogyasztás (city-mpg és highway-mpg átlaga) alapján növekvő sorrendben:")
+print(eredmeny5[["make", "city-mpg", "highway-mpg", "atlag_mpg"]])
+    
+
+# 5. feladat: Sportautók kigyűjtése. Sportautónak számítanak a benzines (fuel-type: gas), hátsókerekes (drive-wheels: rwd), kétajtós (num-of-doors= 2) autók , amelyek 150 LE-nél erősebbek (horsepower>150).
+
+eredmeny6 = adatok[
+    (adatok["fuel-type"] == "gas") &
+    (adatok["drive-wheels"] == "rwd") &
+    (adatok["num-of-doors"] == "two") &
+    (adatok["horsepower"] > 150)
+]
+print("Sportautók, amelyek benzinesek (fuel-type: gas), hátsókerekesek (drive-wheels: rwd), kétajtósak (num-of-doors= 2) és erősebbek 150 LE-nél (horsepower>150):")
+print(eredmeny6[["make", "horsepower"]])
